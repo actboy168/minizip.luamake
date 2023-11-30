@@ -24,6 +24,91 @@ lm:runlua "gen-zlib_name_mangling" {
     output = "$builddir/gen-zlib/zlib_name_mangling-ng.h",
 }
 
+lm:source_set "zlib-ng-x86" {
+    objdeps = {
+        "gen-zconf",
+        "gen-zlib",
+        "gen-zlib_name_mangling",
+    },
+    includes = {
+        ZLIBDIR,
+        ZLIBDIR.."arch/x86/",
+        "$builddir/gen-zlib",
+    },
+    sources = {
+        ZLIBDIR.."functable.c",
+        ZLIBDIR.."cpu_features.c",
+        ZLIBDIR.."arch/x86/*.c",
+    },
+    defines = {
+        "X86_FEATURES",
+        "X86_AVX2",
+        "X86_AVX512VNNI",
+        "X86_AVX512",
+        "X86_SSE42",
+        "X86_SSSE3",
+        "X86_SSE2",
+        "X86_PCLMULQDQ_CRC",
+        "X86_VPCLMULQDQ_CRC",
+    },
+    gcc = {
+        defines = {
+            "HAVE_THREAD_LOCAL",
+            "HAVE_ATTRIBUTE_ALIGNED",
+            "HAVE_BUILTIN_CTZ",
+        },
+    },
+    clang = {
+        defines = {
+            "HAVE_THREAD_LOCAL",
+            "HAVE_ATTRIBUTE_ALIGNED",
+            "HAVE_BUILTIN_CTZ",
+        },
+    },
+}
+
+lm:source_set "zlib-ng-arm" {
+    objdeps = {
+        "gen-zconf",
+        "gen-zlib",
+        "gen-zlib_name_mangling",
+    },
+    includes = {
+        ZLIBDIR,
+        ZLIBDIR.."arch/arm/",
+        "$builddir/gen-zlib",
+    },
+    sources = {
+        ZLIBDIR.."functable.c",
+        ZLIBDIR.."cpu_features.c",
+        ZLIBDIR.."arch/arm/*.c",
+    },
+    defines = {
+        "ARM_FEATURES",
+        "ARM_NEON",
+        "ARM_NEON_HASLD4",
+    },
+    macos = {
+        defines = {
+            "ARM_ACLE",
+        },
+    },
+    gcc = {
+        defines = {
+            "HAVE_THREAD_LOCAL",
+            "HAVE_ATTRIBUTE_ALIGNED",
+            "HAVE_BUILTIN_CTZLL",
+        },
+    },
+    clang = {
+        defines = {
+            "HAVE_THREAD_LOCAL",
+            "HAVE_ATTRIBUTE_ALIGNED",
+            "HAVE_BUILTIN_CTZLL",
+        },
+    },
+}
+
 lm:source_set "zlib-ng" {
     objdeps = {
         "gen-zconf",
@@ -37,6 +122,17 @@ lm:source_set "zlib-ng" {
     sources = {
         ZLIBDIR.."*.c",
         "!"..ZLIBDIR.."gz*.c",
+        "!"..ZLIBDIR.."functable.c",
+        "!"..ZLIBDIR.."cpu_features.c",
+    },
+    windows = {
+        deps = "zlib-ng-x86",
+    },
+    macos = {
+        deps = "zlib-ng-arm",
+    },
+    ios = {
+        deps = "zlib-ng-arm",
     },
     msvc = {
         defines = {
@@ -64,7 +160,8 @@ lm:source_set "zlib-ng" {
 
 lm:source_set "minizip-ng" {
     defines = {
-        "MZ_ZIP_NO_CRYPTO"
+        "MZ_ZIP_NO_CRYPTO",
+        "HAVE_ZLIB",
     },
     includes = {
         MINIZIPDIR,
@@ -89,6 +186,18 @@ lm:source_set "minizip-ng" {
             MINIZIPDIR.."mz_strm_os_win32.c",
         },
     },
+    macos = {
+        sources = {
+            MINIZIPDIR.."mz_os_posix.c",
+            MINIZIPDIR.."mz_strm_os_posix.c",
+        },
+    },
+    ios = {
+        sources = {
+            MINIZIPDIR.."mz_os_posix.c",
+            MINIZIPDIR.."mz_strm_os_posix.c",
+        },
+    },
     msvc = {
         defines = {
             "_CRT_SECURE_NO_WARNINGS"
@@ -104,4 +213,8 @@ lm:exe "minizip" {
     sources = {
         MINIZIPDIR.."minizip.c",
     }
+}
+
+lm:default {
+    "minizip"
 }
