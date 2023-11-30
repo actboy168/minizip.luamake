@@ -37,7 +37,17 @@ lm:source_set "zlib-ng" {
     sources = {
         ZLIBDIR.."*.c",
         "!"..ZLIBDIR.."gz*.c",
-    }
+    },
+    gcc = {
+        defines = {
+            "HAVE_ATTRIBUTE_ALIGNED"
+        },
+    },
+    clang = {
+        defines = {
+            "HAVE_ATTRIBUTE_ALIGNED"
+        },
+    },
 }
 
 lm:source_set "minizip-ng" {
@@ -62,14 +72,16 @@ lm:source_set "minizip-ng" {
         MINIZIPDIR.."mz_strm_zlib.c",
     },
     windows = {
-        defines = {
-            "_CRT_SECURE_NO_WARNINGS"
-        },
         sources = {
             MINIZIPDIR.."mz_os_win32.c",
             MINIZIPDIR.."mz_strm_os_win32.c",
         },
-    }
+    },
+    msvc = {
+        defines = {
+            "_CRT_SECURE_NO_WARNINGS"
+        },
+    },
 }
 
 lm:exe "minizip" {
