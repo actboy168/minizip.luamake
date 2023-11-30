@@ -38,14 +38,26 @@ lm:source_set "zlib-ng" {
         ZLIBDIR.."*.c",
         "!"..ZLIBDIR.."gz*.c",
     },
+    msvc = {
+        defines = {
+            "_CRT_SECURE_NO_DEPRECATE",
+            "_CRT_NONSTDC_NO_DEPRECATE",
+        }
+    },
     gcc = {
         defines = {
-            "HAVE_ATTRIBUTE_ALIGNED"
+            "HAVE_THREAD_LOCAL",
+            "HAVE_ATTRIBUTE_ALIGNED",
+            "HAVE_BUILTIN_CTZ",
+            "HAVE_BUILTIN_CTZLL",
         },
     },
     clang = {
         defines = {
-            "HAVE_ATTRIBUTE_ALIGNED"
+            "HAVE_THREAD_LOCAL",
+            "HAVE_ATTRIBUTE_ALIGNED",
+            "HAVE_BUILTIN_CTZ",
+            "HAVE_BUILTIN_CTZLL",
         },
     },
 }
